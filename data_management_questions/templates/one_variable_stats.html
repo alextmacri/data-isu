@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>One Variable Stats</title>
+</head>
+<body>
+	<h1>One Variable Stats practice questions:</h1>
+    <p>Round to 6 decimal places</p>
+    <form action="/one_variable_stats/" method="post">
+        {% csrf_token %}
+        <hr/>
+        <label for="answer1">1) {{ question1.prompt }} </label>
+        <input id="answer1" type="number" step="0.000001" name="answer1">
+        <hr/>
+        <label for="answer2">2) {{ question2.prompt }} </label>
+        <input id="answer2" type="number" step="0.000001" name="answer2">
+        <hr/>
+        <label for="answer3">3) {{ question3.prompt }} </label>
+        <input id="answer3" type="number" step="0.000001" name="answer3">
+        <hr/>
+        <label for="answer4">4) {{ question4.prompt }} </label>
+        <input id="answer4" type="number" step="0.000001" name="answer4">
+        <hr/>
+        <label for="answer5">5) {{ question5.prompt }} </label>
+        <input id="answer5" type="number" step="0.000001" name="answer5">
+        <hr/>
+        <label for="answer6">6) {{ question6.prompt }} </label>
+        <input id="answer6" type="number" step="0.000001" name="answer6">
+        <hr/>
+        <input type="submit" value="OK">
+    </form>
+</body>
+</html>

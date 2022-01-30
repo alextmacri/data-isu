@@ -1,15 +1,19 @@
 import numpy as np
 import statistics as stats
 from enum import Enum
-from question import Question
+from .question import Question
 
 class OneVariableStatsQuestionType(Enum):
     ALL = 0
-    MEAN = 1
+    MODES = 1
     MEDIAN = 2
-    MODES = 3
+    MEAN = 3
     RANGE = 4
     STDEV = 5
+
+    @staticmethod
+    def random_type():
+        return np.random.choice(list(OneVariableStatsQuestionType)[2:])
 
 class OneVariableStatsQuestion(Question):
     def __init__(self, question_type, dataset_min: int=10, dataset_max: int=30, dataset_size: int=10, dataset_whole: bool=True) -> None:

@@ -1,7 +1,7 @@
 import numpy as np
 from math import comb
 from enum import Enum
-from question import Question
+from .question import Question
 
 class CardContent(Enum):
     ACE = 0
@@ -71,6 +71,10 @@ class ProbabilitiesQuestionType(Enum):
     MUT_EXC = 4
     NON_MUT_EXC = 5
 
+    @staticmethod
+    def random_type():
+        return np.random.choice(list(ProbabilitiesQuestionType))
+
 class ProbabilitiesQuestion(Question):
     def __init__(self, question_type) -> None:
         self.question_type = question_type
@@ -92,12 +96,12 @@ class ProbabilitiesQuestion(Question):
             cards += [self.random_card(other_card=cards[0], overlap=False)]
 
         self.prompt_base_key = {
-            ProbabilitiesQuestionType.SINGLE_EVENT: 'what is the probability of drawing a %data% card from a standard deck of cards?',
-            ProbabilitiesQuestionType.COUNTING: 'what is the probability of drawing %data% %data% cards from a standard deck of cards if %data% cards are randomly selected?',
-            ProbabilitiesQuestionType.DEPENDANT: 'what is the probability of drawing a %data% card and a %data% card from a standard deck of cards, assuming that the first is not replaced?',
-            ProbabilitiesQuestionType.INDEPENDANT: 'what is the probability of drawing a %data% card and a %data% card from a standard deck of cards, assuming that the first is replaced and the deck is shuffled?',
-            ProbabilitiesQuestionType.MUT_EXC: 'what is the probability of drawing a %data% card or a %data% card from a standard deck of cards?',
-            ProbabilitiesQuestionType.NON_MUT_EXC: 'what is the probability of drawing a %data% card or a %data% card from a standard deck of cards?',
+            ProbabilitiesQuestionType.SINGLE_EVENT: 'What is the probability of drawing a %data% card from a standard deck of cards?',
+            ProbabilitiesQuestionType.COUNTING: 'What is the probability of drawing %data% %data% cards from a standard deck of cards if %data% cards are randomly selected?',
+            ProbabilitiesQuestionType.DEPENDANT: 'What is the probability of drawing a %data% card and a %data% card from a standard deck of cards, assuming that the first is not replaced?',
+            ProbabilitiesQuestionType.INDEPENDANT: 'What is the probability of drawing a %data% card and a %data% card from a standard deck of cards, assuming that the first is replaced and the deck is shuffled?',
+            ProbabilitiesQuestionType.MUT_EXC: 'What is the probability of drawing a %data% card or a %data% card from a standard deck of cards?',
+            ProbabilitiesQuestionType.NON_MUT_EXC: 'What is the probability of drawing a %data% card or a %data% card from a standard deck of cards?',
         }
         base = self.prompt_base_key[self.question_type]
         
@@ -106,7 +110,7 @@ class ProbabilitiesQuestion(Question):
             answer = [self.calc_counting(cards, amount)]
         elif question_type == ProbabilitiesQuestionType.DEPENDANT:
             data = cards
-            answer = [self.calc_counting(cards, overlap)]
+            answer = [self.calc_dependant(cards, overlap)]
         else:
             data = cards
             self.answer_key = {
@@ -149,18 +153,16 @@ class ProbabilitiesQuestion(Question):
             if other_card.content and other_card.suit:
                 rand_num = np.random.randint(3)
                 if rand_num != 0:
-                    pool = list(CardContent)
+                    pool = list(CardContent)[:-1]
                     if other_card.face:
-                        pool = pool[:-4]
-                    else:
-                        pool.remove(other_card.content)
+                        other_card.content, other_card.face = np.random.choice(pool), False
+                    pool.remove(other_card.content)
                     content = np.random.choice(pool)
                 if rand_num != 1:
-                    pool = list(CardSuit)
+                    pool = list(CardSuit)[:-2]
                     if other_card.colour:
-                        pool = pool[:-2]
-                    else:
-                        pool.remove(other_card.suit)
+                        other_card.suit, other_card.colour = np.random.choice(pool), False
+                    pool.remove(other_card.suit)
                     suit = np.random.choice(pool)
             else:                                   # different only suit or content
                 if other_card.content:
@@ -193,12 +195,12 @@ class ProbabilitiesQuestion(Question):
     def calc_dependant(self, cards: list[Card], overlap: bool) -> float:
         card1, card2 = cards[0], cards[1]
         if overlap:
-            return (card1.probability * (card2.probability - 1)) / 51
-        return (card1.probability * card2.probability) / 51
+            return (card1.probability * (card2.probability - 1)) / (52 * 51)
+        return (card1.probability * card2.probability) / (52 * 51)
 
     def calc_independant(self, cards: list[Card]) -> float:
         card1, card2 = cards[0], cards[1]
-        return (card1.probability * card2.probability) / 52
+        return (card1.probability * card2.probability) / (52 * 52)
 
     def calc_mut_exc(self, cards: list[Card]) -> float: 
         card1, card2 = cards[0], cards[1]
@@ -206,7 +208,7 @@ class ProbabilitiesQuestion(Question):
 
     def calc_non_mut_exc(self, cards: list[Card]) -> float:
         card1, card2 = cards[0], cards[1]
-        return (card1.probability + card2.probability - card1.calc_overlap(card2)) / 52
+        return ((card1.probability + card2.probability) - card1.calc_overlap(card2)) / 52
 
 
 if __name__ == '__main__':                              # Testing each type
