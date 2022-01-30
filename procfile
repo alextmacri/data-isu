@@ -1,1 +1,1 @@
-web: gunicorn online_questions.wsgi
+web: gunicorn online_questions.wsgi:application --log-file -
