@@ -63,15 +63,15 @@ def one_variable_stats(request):
     global one_variable_stats_context
     if request.method == 'POST':
         answers = {
-            'answer1': 0 if not request.POST['answer1'] else round(float(request.POST['answer1']), 6),
-            'answer2': 0 if not request.POST['answer2'] else round(float(request.POST['answer2']), 6),
-            'answer3': 0 if not request.POST['answer3'] else round(float(request.POST['answer3']), 6),
-            'answer4': 0 if not request.POST['answer4'] else round(float(request.POST['answer4']), 6),
-            'answer5': 0 if not request.POST['answer5'] else round(float(request.POST['answer5']), 6),
-            'answer6': 0 if not request.POST['answer6'] else round(float(request.POST['answer6']), 6),
+            'answer1': 0 if not request.POST['answer1'] else round(float(request.POST['answer1']), 1),
+            'answer2': 0 if not request.POST['answer2'] else round(float(request.POST['answer2']), 1),
+            'answer3': 0 if not request.POST['answer3'] else round(float(request.POST['answer3']), 1),
+            'answer4': 0 if not request.POST['answer4'] else round(float(request.POST['answer4']), 1),
+            'answer5': 0 if not request.POST['answer5'] else round(float(request.POST['answer5']), 1),
+            'answer6': 0 if not request.POST['answer6'] else round(float(request.POST['answer6']), 1),
         }
         for i in range(1, len(one_variable_stats_context) + 1):
-            answers[f'solution{i}'] = round(float(one_variable_stats_context[f'question{i}'].answer[0]), 6)
+            answers[f'solution{i}'] = round(float(one_variable_stats_context[f'question{i}'].answer[0]), 1)
         context = {
             'results1': 'Good job!' if answers['answer1'] == answers['solution1'] else 'Better luck next time!',
             'results2': 'Good job!' if answers['answer2'] == answers['solution2'] else 'Better luck next time!',
